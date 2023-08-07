@@ -8,7 +8,7 @@ from torch import Tensor
 import torch.nn.functional as F
 import torch.nn as nn
 import torch.nn.functional as F
-from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler, DDIMScheduler, StableDiffusionPipeline, StableDiffusionImg2ImgPipeline
+from diffusers import AutoencoderKL, UNet2DConditionModel, PNDMScheduler, DDIMScheduler, StableDiffusionPipeline, StableDiffusionImg2ImgPipeline, StableDiffusionXLPipeline
 from diffusers.utils.import_utils import is_xformers_available
 from os.path import isfile
 from pathlib import Path
@@ -147,8 +147,12 @@ class StableDiffusion(nn.Module):
         self.precision_t = torch.float16 if fp16 else torch.float32
 
         # Create model
-        pipe = StableDiffusionPipeline.from_pretrained(
-            sd_path, torch_dtype=self.precision_t, local_files_only=False)
+        if 'stabilityai/stable-diffusion-xl' in sd_path:
+            pipe = StableDiffusionXLPipeline.from_pretrained(
+                sd_path, torch_dtype=self.precision_t, local_files_only=False)
+        else:
+            pipe = StableDiffusionPipeline.from_pretrained(
+                sd_path, torch_dtype=self.precision_t, local_files_only=False)
 
         if isfile('./unet_traced.pt'):
             # use jitted unet
