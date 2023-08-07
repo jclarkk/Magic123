@@ -141,10 +141,10 @@ class StableDiffusion(nn.Module):
         self.vram_O = vram_O
         self.fp16 = fp16
 
-        logger.info(f'[INFO] loading stable diffusion...')
-
         sd_path, clip_path = get_model_path(sd_version, clip_version, hf_key)
         self.precision_t = torch.float16 if fp16 else torch.float32
+
+        logger.info(f'[INFO] loading {sd_path}')
 
         # Create model
         if 'stabilityai/stable-diffusion-xl' in sd_path:
