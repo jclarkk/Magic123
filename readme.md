@@ -17,12 +17,19 @@ Training convergence of a demo example:
 
 Compare Magic123 without textual inversion with abaltions using only 2D prior (SDS) or using only 3D prior (Zero123):
 
-https://github.com/guochengqian/Magic123/assets/48788073/e5a3c3cb-bcb1-4b10-8bfb-2c2eb79a9289
+
+https://github.com/guochengqian/Magic123/assets/48788073/c91f4c81-8c2c-4f84-8ce1-420c12f7e886
 
 
 Effects of Joint Prior. Increasing the strength of 2D prior leads to more imagination, more details, and less 3D consistencies. 
 
 <img src="docs/static/2d_3d.png" width="800" />
+
+
+
+
+https://github.com/guochengqian/Magic123/assets/48788073/98cb4dd7-7bf3-4179-9b6d-e8b47d928a68
+
 
 Official PyTorch Implementation of Magic123: One Image to High-Quality 3D Object Generation Using Both 2D and 3D Diffusion Priors. Code is built upon [Stable-DreamFusion](https://github.com/ashawkey/stable-dreamfusion) repo.
 
@@ -101,14 +108,14 @@ Takes ~40 mins for the coarse stage and ~20 mins for the second stage on a 32G V
 bash scripts/magic123/run_both_priors.sh $GPU_NO $JOBNAME_First_Stage $JOBNAME_Second_Stage $PATH_to_Example_Directory $IMAGE_BASE_NAME $Enable_First_Stage $Enable_Second_Stage {More_Arugments}
 ```
 
-As an example, run Magic123 in the dragon example using both stages in GPU 0 and set the jobname for the first stage as `default` and the jobname for the second stage as `dmtet`, by the following command:
+As an example, run Magic123 in the dragon example using both stages in GPU 0 and set the jobname for the first stage as `nerf` and the jobname for the second stage as `dmtet`, by the following command:
 ```bash
-bash scripts/magic123/run_both_priors.sh 0 default dmtet data/realfusion15/metal_dragon_statue rgba.png 1 1 
+bash scripts/magic123/run_both_priors.sh 0 nerf dmtet data/realfusion15/metal_dragon_statue 1 1 
 ```
 
 More arguments (e.g. `--lambda_guidance 1 40`) can be appended to the command line such as:
 ```bash
-bash scripts/magic123/run_both_priors.sh 0 default dmtet data/realfusion15/metal_dragon_statue rgba.png 1 1 --lambda_guidance 1 40
+bash scripts/magic123/run_both_priors.sh 0 nerf dmtet data/realfusion15/metal_dragon_statue 1 1 --lambda_guidance 1 40
 ```
 
 ### Run Magic123 for a group of examples
@@ -117,11 +124,11 @@ bash scripts/magic123/run_both_priors.sh 0 default dmtet data/realfusion15/metal
 
 
 ### Run Magic123 on a single example without textual inversion
-textual inversion is tedious (requires ~2.5 hours optimization), if you want to test Magic123 quickly on your own example without texural inversion (might degrade the performance), try the following:
+textual inversion is tedious (requires ~2.5 hours optimization), if you want to test Magic123 quickly on your own example without textual inversion (might degrade the performance), try the following:
 
 - first, foreground and depth estimation
     ```
-    python preprocess_image.py --path data/demo/ironman/ironman.png
+    python preprocess_image.py --path data/demo/ironman/main.png
     ```
 
 - Run Magic123 coarse stage without textual inversion, takes ~40 mins
@@ -177,7 +184,7 @@ textual inversion is tedious (requires ~2.5 hours optimization), if you want to 
 ### Run ablation studies
 - Run Magic123 with only 2D prior *with* textual inversion (Like RealFusion but we achieve much better performance through training stragies and the coarse-to-fine pipeline)
     ```
-    bash scripts/magic123/run_2dprior.sh 0 default dmtet data/realfusion15/metal_dragon_statue rgba.png 1 1
+    bash scripts/magic123/run_2dprior.sh 0 nerf dmtet data/realfusion15/metal_dragon_statue 1 1
     ```
 
 - Run Magic123 with only 2D prior *without* textual inversion (Like RealFusion but we achieve much better performance through training stragies and the coarse-to-fine pipeline)
@@ -188,7 +195,7 @@ textual inversion is tedious (requires ~2.5 hours optimization), if you want to 
 
 - Run Magic123 with only 3D prior (Like Zero-1-to-3 but we achieve much better performance through training stragies and the coarse-to-fine pipeline)
     ```
-    bash scripts/magic123/run_3dprior.sh 0 default dmtet data/demo/ironman rgba.png 1 1
+    bash scripts/magic123/run_3dprior.sh 0 nerf dmtet data/demo/ironman 1 1
     ```
 
 
@@ -197,7 +204,7 @@ textual inversion is tedious (requires ~2.5 hours optimization), if you want to 
 2. Smaller range of time steps for the defusion noise (t_range). We find *[0.2, 0.6]* gives better performance for image-to-3D tasks. 
 3. Using normals as latent in the first 2000 improves generated geometry a bit gernerally (but not always). We turn on this for Magic123 corase stage in the script `--normal_iter_ratio 0.2` 
 4. We erode segmentation edges (makes the segmentation map 2 pixels shrinked towards internal side) to remove artifacts due to segmentation erros. This is turned on in the fine stage in magic123 in the script through `--rm_edge`
-5. Other general tricks such as improved texural inversion, advanced diffusion prior (DeepFloyd, SD-XL), stronger 3D prior (Zero123-XL), and larger batch size can be adopted as well but not studied in this work.
+5. Other general tricks such as improved textual inversion, advanced diffusion prior (DeepFloyd, SD-XL), stronger 3D prior (Zero123-XL), and larger batch size can be adopted as well but not studied in this work.
 6. textual inversion is not very necessary for well-known things (e.g. ironman) and easily described textures and geoemtries, since pure texts contains these texture information and will be understood by diffusion models. We use textual inversion by default in all experiments.
 
 # Acknowledgement
@@ -298,7 +305,7 @@ If you find this work useful, a citation will be appreciated via:
 ```
 @article{qian2023magic123,
   title={Magic123: One Image to High-Quality 3D Object Generation Using Both 2D and 3D Diffusion Priors},
-  author={Qian, Guocheng and Mai, Jinjie and Hamdi, Abdullah and Ren, Jian and Siarohin, Aliaksandr and Li, Bing and Lee, Hsin-Ying and Skorokhodov, Ivan and Wonka, Peter and Tulyakov, Sergey and others},
+  author={Qian, Guocheng and Mai, Jinjie and Hamdi, Abdullah and Ren, Jian and Siarohin, Aliaksandr and Li, Bing and Lee, Hsin-Ying and Skorokhodov, Ivan and Wonka, Peter and Tulyakov, Sergey and Ghanem, Bernard},
   journal={arXiv preprint arXiv:2306.17843},
   year={2023}
 }
